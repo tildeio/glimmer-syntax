@@ -168,6 +168,8 @@ export class HandlebarsNodeVisitors implements HandlebarsCallbacks {
     const state = this.#parser.state();
     const mustache = build();
 
+    // Handle some cases where the tokenizer state has changed but no tokenizer events fired yet.
+    // TODO: Enumerate these cases somewhere and synchronize the parser state with the tokenizer state.
     if (state === 'attribute:value:before') {
       this.#parser.transitionTo('attributeValueUnquoted');
       this.#parser.attr.value(false);
