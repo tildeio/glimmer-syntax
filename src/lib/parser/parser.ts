@@ -131,6 +131,11 @@ export class Parser {
     return asSimpleState(this.#tokenizer.state, event);
   }
 
+  update() {
+    if (this.#tokenizer.state === 'beforeAttributeName') {
+    }
+  }
+
   get builder(): Phase1Builder {
     // @ts-expect-error FIXME
     return this.#builderStack.current;
@@ -443,6 +448,10 @@ export class Parser {
     constructing = this.#constructingStack.current
   ): C {
     return this.#return(constructing, type);
+  }
+
+  get type(): Constructing['type'] {
+    return this.#constructingStack.current.type;
   }
 
   in(type: Constructing['type']): boolean {

@@ -168,6 +168,49 @@ export class HandlebarsNodeVisitors implements HandlebarsCallbacks {
     const state = this.#parser.state();
     const mustache = build();
 
+    if (state === 'attribute:value:before') {
+      this.#parser.transitionTo('attributeValueUnquoted');
+      this.#parser.attr.value(false);
+    }
+
+    if (state === 'tag:top-level') {
+      this.#parser.tag.body();
+    }
+
+    if (state === 'tag-name:start:before') {
+      return this.#invalidCurly(ParserState.TagName, mustache.loc);
+    }
+
+    if ('error' in mustache) {
+      return mustache;
+    }
+
+    switch (this.#parser.type) {
+      case 'block':
+      case 'element':
+        this.#parser.parent.append(mustache);
+        break;
+      case 'comment':
+      case 'text':
+        this.#parser.addChars(this.#parser.slice(rawMustache.loc));
+        break;
+      case 'tag:name':
+      case 'tag:end':
+        return this.#invalidCurly(ParserState.TagName, mustache.loc);
+      case 'tag:start':
+        this.#parser.element.modifier(mustache);
+        break;
+      case 'tag:attr:name':
+        this.#parser.attr.finalize();
+        this.#parser.element.modifier(mustache);
+        break;
+      case 'tag:attr:value':
+        this.#parser.attr.value.dynamic(mustache);
+        break;
+    }
+
+    return mustache;
+
     switch (state) {
       case 'comment': {
         this.#parser.addChars(this.#parser.slice(rawMustache.loc));
