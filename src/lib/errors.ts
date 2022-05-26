@@ -151,6 +151,8 @@ export const SYNTAX_ERRORS = {
   'html.syntax.invalid-named-block': `Invalid named block without a name (\`:\`) detected. You may have created a named block without a name, or you may have began your name with a number. Named blocks must have names that are at least one character long, and begin with a lower case letter`,
   'html.syntax.invalid-construct': (options: HbsErrorOptions) =>
     `Invalid ${formatHbsConstruct(options.is, 'singular')}${formatParserState(options.in)}`,
+  'html.syntax.invalid-literal-modifier': (literal: HBS.Literal['value']) =>
+    `You must call an element modifier, and ${JSON.stringify(literal)} is not callable`,
 
   'passthrough.tokenizer': (error: string) => `HTML Error: ${error}`,
 } as const;

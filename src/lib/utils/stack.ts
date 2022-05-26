@@ -1,6 +1,5 @@
-import { assert } from 'console';
-
 import type { PresentArray } from './array';
+import { assert } from './assert.js';
 import { existing } from './exists.js';
 
 export class Stack<T extends object> {
@@ -47,7 +46,7 @@ export class Stack<T extends object> {
   }
 }
 
-export class PresentStack<T extends object> extends Array<T> {
+export class PresentStack<T extends object> {
   static create<T extends object>(initial: T): PresentStack<T> {
     return new PresentStack([initial]);
   }
@@ -55,7 +54,6 @@ export class PresentStack<T extends object> extends Array<T> {
   readonly #items: PresentArray<T>;
 
   private constructor(items: PresentArray<T>) {
-    super(...items);
     this.#items = items;
   }
 
@@ -65,6 +63,20 @@ export class PresentStack<T extends object> extends Array<T> {
 
   get current(): T {
     return this.#items[this.#items.length - 1];
+  }
+
+  get length(): number {
+    return this.#items.length;
+  }
+
+  nearest<U extends T>(find: (value: T) => value is U): U | undefined {
+    for (let i = this.#items.length - 1; i >= 0; i--) {
+      const item = this.#items[i];
+      if (find(item)) {
+        return item;
+      }
+    }
+    return undefined;
   }
 
   push(item: T): number {

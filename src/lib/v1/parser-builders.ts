@@ -177,24 +177,24 @@ export class Phase1Builder {
   }
 
   element({
-    tag,
-    selfClosing,
-    attrs,
-    blockParams,
-    modifiers,
-    comments,
+    name,
+    attributes = [],
+    blockParams = [],
+    modifiers = [],
+    comments = [],
     children,
     loc,
   }: BuildElementOptions): ASTv1.ElementNode {
     return {
       type: 'ElementNode',
-      tag,
-      selfClosing: selfClosing,
-      attributes: attrs || [],
-      blockParams: blockParams || [],
-      modifiers: modifiers || [],
-      comments: (comments as ASTv1.MustacheCommentStatement[]) || [],
-      children: children || [],
+      tag: name.name,
+      name,
+      selfClosing: children === undefined,
+      attributes,
+      blockParams,
+      modifiers,
+      comments,
+      children: children ?? [],
       loc,
     };
   }
@@ -242,6 +242,10 @@ export class Phase1Builder {
       chars,
       loc,
     };
+  }
+
+  emptyAttrValue(span: SourceSpan): ASTv1.AttrValue {
+    return this.text({ chars: '', loc: span });
   }
 
   sexpr({
@@ -443,13 +447,12 @@ export type SexpValue =
   | undefined;
 
 export interface BuildElementOptions {
-  tag: string;
-  selfClosing: boolean;
-  attrs: ASTv1.AttrNode[];
-  modifiers: ASTv1.ElementModifierStatement[];
-  children: ASTv1.Statement[];
-  comments: ElementComment[];
-  blockParams: string[];
+  name: ASTv1.ElementName;
+  attributes?: ASTv1.AttrNode[];
+  modifiers?: ASTv1.ElementModifierStatement[];
+  children?: ASTv1.Statement[];
+  comments: ASTv1.MustacheCommentStatement[];
+  blockParams?: string[];
   loc: SourceSpan;
 }
 

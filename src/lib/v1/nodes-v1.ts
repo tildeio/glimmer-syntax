@@ -151,6 +151,7 @@ export interface ElementName {
 export interface ElementNode extends BaseNode {
   type: 'ElementNode';
   tag: string;
+  name: ElementName;
   selfClosing: boolean;
   attributes: AttrNode[];
   blockParams: string[];

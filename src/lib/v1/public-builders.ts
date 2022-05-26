@@ -425,8 +425,18 @@ export class PublicBuilders {
       tagName = tag;
     }
 
+    const span = toSourceSpan(loc, this.#template);
+
     return {
       type: 'ElementNode',
+      name: {
+        type: 'ElementName',
+        name: tagName,
+        loc: span
+          .getStart()
+          .move(1)
+          .withEnd(span.getStart().move(tagName.length + 1)),
+      },
       tag: tagName,
       selfClosing: selfClosing,
       attributes: attrs || [],
@@ -434,7 +444,7 @@ export class PublicBuilders {
       modifiers: modifiers || [],
       comments: (comments as ASTv1.MustacheCommentStatement[]) || [],
       children: children || [],
-      loc: toSourceSpan(loc, this.#template),
+      loc: span,
     };
   }
 

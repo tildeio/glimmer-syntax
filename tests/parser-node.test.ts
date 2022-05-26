@@ -1,14 +1,14 @@
-import { type SyntaxErrorArgs, GlimmerSyntaxError } from '@glimmer/syntax';
 import {
-  type ASTv1,
-  type Dict,
   Buildersv1,
+  GlimmerSyntaxError,
   ParserState,
   preprocess as parse,
   preprocess,
+  type ASTv1,
+  type Dict,
+  type SyntaxErrorArgs,
 } from '@glimmer/syntax';
 import { describe, expect, test } from 'vitest';
-
 import type { PresentArray } from '../src/lib/utils/array';
 import { astEqual } from './support';
 import { AnnotatedSource } from './support/annotated.js';
@@ -800,9 +800,16 @@ export function element(tag: TagDescriptor, ...options: ElementParts[]): ASTv1.E
     }
   }
 
+  const start = b.loc(loc).getStart();
+
   return {
     type: 'ElementNode',
     tag: tag || '',
+    name: {
+      type: 'ElementName',
+      name: tag,
+      loc: start.move(1).withEnd(start.move(tag.length + 1)),
+    },
     selfClosing: selfClosing,
     attributes: attrs || [],
     blockParams: blockParams || [],

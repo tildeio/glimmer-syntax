@@ -79,6 +79,20 @@ export abstract class NodeUtils<N extends ASTv1.Node> {
     }
   }
 
+  asParent(): Maybe<ParentUtils> {
+    const parent = Utils(this.node);
+
+    if (parent instanceof ParentUtils) {
+      return Maybe.some(parent);
+    } else {
+      return Maybe.none();
+    }
+  }
+
+  isParent(): boolean {
+    return this.asParent().isSome();
+  }
+
   asPath(): Maybe<PathNodeUtils> {
     return this.asType('PathExpression');
   }
@@ -93,6 +107,8 @@ export abstract class NodeUtils<N extends ASTv1.Node> {
 }
 
 export class NodeUtilsImpl extends NodeUtils<ASTv1.Node> {}
+
+export class ParentUtils extends NodeUtils<ASTv1.Parent> {}
 
 export class ExpressionUtils extends NodeUtils<ASTv1.Expression> {
   asVar(named?: string) {
@@ -144,6 +160,10 @@ export class PathNodeUtils extends NodeUtils<ASTv1.PathExpression> {
 }
 
 interface UtilTypes {
+  ElementNode: ParentUtils;
+  Block: ParentUtils;
+  Template: ParentUtils;
+
   PathExpression: PathNodeUtils;
   SubExpression: ExpressionUtils;
   StringLiteral: ExpressionUtils;
@@ -159,10 +179,15 @@ type UtilTypeFor<K extends keyof ASTv1.Nodes> = K extends keyof UtilTypes
 
 export function Utils<N extends ASTv1.Node>(node: N): UtilTypeFor<N['type']>;
 export function Utils(node: ASTv1.Node): NodeUtils<ASTv1.Node> {
-  if (node.type === 'PathExpression') {
-    return new PathNodeUtils(node);
-  } else {
-    return new NodeUtilsImpl(node);
+  switch (node.type) {
+    case 'PathExpression':
+      return new PathNodeUtils(node);
+    case 'ElementNode':
+    case 'Block':
+    case 'Template':
+      return new ParentUtils(node);
+    default:
+      return new NodeUtilsImpl(node);
   }
 }
 

@@ -1,6 +1,5 @@
 import { assert } from 'console';
 import type { TokenizerDelegate } from 'simple-html-tokenizer';
-
 import { existing } from '../utils/exists';
 
 export type TokenizerState =

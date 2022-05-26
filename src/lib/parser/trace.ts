@@ -115,7 +115,15 @@ function formatArgs(args: TraceArgs) {
 }
 
 function formatPrimitive(primitive: Primitive) {
-  return String(primitive);
+  switch (typeof primitive) {
+    case 'string':
+      return JSON.stringify(primitive);
+    case 'number':
+    case 'boolean':
+      return String(primitive);
+    case 'object':
+      return 'null';
+  }
 }
 
 function formatNamedArgs(namedArgs: NamedArgs) {
